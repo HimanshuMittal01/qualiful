@@ -1,15 +1,16 @@
 import os
 import numpy as np
 from tensorflow import keras
-import segmentation_models as sm
+import src.segmentation_models as sm
 
 sm.set_framework('tf.keras')
 
 class ModelSM:
-    def __init__(self, backbone, batch_size, classes):
+    def __init__(self, backbone, batch_size, classes, decoder_block_type='transpose'):
         self.backbone = backbone
         self.batch_size = batch_size
         self.classes = classes
+        self.decoder_block_type = decoder_block_type
 
         # define network parameters
         self.num_classes = 1 if len(self.classes) == 1 else (len(self.classes) + 1)
@@ -26,7 +27,12 @@ class ModelSM:
         TODO: Add parameters to make custom model
         """
         
-        self.model = sm.Unet(self.backbone, classes=self.num_classes, activation=self.activation)
+        self.model = sm.Unet(
+            self.backbone,
+            classes=self.num_classes,
+            activation=self.activation,
+            decoder_block_type='transpose'
+        )
 
         # define optomizer
         self.optim = keras.optimizers.Adam(learning_rate)

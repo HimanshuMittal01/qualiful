@@ -18,40 +18,40 @@ class Augmentor:
 
             A.HorizontalFlip(p=0.5),
 
-            A.ShiftScaleRotate(scale_limit=0.5, rotate_limit=0, shift_limit=0.1, p=1, border_mode=0),
+            # A.ShiftScaleRotate(scale_limit=0.5, rotate_limit=0, shift_limit=0.1, p=1, border_mode=0),
 
-            A.PadIfNeeded(min_height=self.height, min_width=self.width, always_apply=True, border_mode=0),
-            A.RandomCrop(height=self.height, width=self.width, always_apply=True),
+            # A.PadIfNeeded(min_height=self.height, min_width=self.width, always_apply=True, border_mode=0),
+            # A.RandomCrop(height=self.height, width=self.width, always_apply=True),
 
-            A.IAAAdditiveGaussianNoise(p=0.2),
-            A.IAAPerspective(p=0.5),
+            # A.IAAAdditiveGaussianNoise(p=0.2),
+            # A.IAAPerspective(p=0.5),
 
-            A.OneOf(
-                [
-                    A.CLAHE(p=1),
-                    A.RandomBrightness(p=1),
-                    A.RandomGamma(p=1),
-                ],
-                p=0.9,
-            ),
+            # A.OneOf(
+            #     [
+            #         A.CLAHE(p=1),
+            #         A.RandomBrightness(p=1),
+            #         A.RandomGamma(p=1),
+            #     ],
+            #     p=0.9,
+            # ),
 
-            A.OneOf(
-                [
-                    A.IAASharpen(p=1),
-                    A.Blur(blur_limit=3, p=1),
-                    A.MotionBlur(blur_limit=3, p=1),
-                ],
-                p=0.9,
-            ),
+            # A.OneOf(
+            #     [
+            #         A.IAASharpen(p=1),
+            #         A.Blur(blur_limit=3, p=1),
+            #         A.MotionBlur(blur_limit=3, p=1),
+            #     ],
+            #     p=0.9,
+            # ),
 
-            A.OneOf(
-                [
-                    A.RandomContrast(p=1),
-                    A.HueSaturationValue(p=1),
-                ],
-                p=0.9,
-            ),
-            A.Lambda(mask=self._round_clip_0_1)
+            # A.OneOf(
+            #     [
+            #         A.RandomContrast(p=1),
+            #         A.HueSaturationValue(p=1),
+            #     ],
+            #     p=0.9,
+            # ),
+            # A.Lambda(mask=self._round_clip_0_1)
         ]
         return A.Compose(train_transform)
 

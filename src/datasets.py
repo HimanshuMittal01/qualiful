@@ -14,12 +14,14 @@ class LemonDatasetCOCO:
         self,
         images_dir,
         annot_file,
+        img_size,
         classes=None,
         augmentation=None,
         preprocessing=None
     ):
         # Initiate COCO API
         self.coco = COCO(annot_file)
+        self.img_size = img_size
 
         # Load images in dict format using COCO
         self.ids = self.coco.getImgIds()
@@ -62,6 +64,9 @@ class LemonDatasetCOCO:
             sample = self.preprocessing(image=image, mask=mask)
             image, mask = sample['image'], sample['mask']
         
+        image = cv2.resize(image, self.img_size)
+        mask = cv2.resize(mask, self.img_size)
+
         return image, mask
 
     def __len__(self):
@@ -76,6 +81,7 @@ class LemonDataset:
         self,
         images_dir,
         masks_dir,
+        img_size,
         classes=None,
         augmentation=None,
         preprocessing=None
@@ -83,6 +89,7 @@ class LemonDataset:
         self.ids = os.listdir(images_dir)
         self.images_fps = [os.path.join(images_dir, image_id) for image_id in self.ids]
         self.masks_fps  = [os.path.join(masks_dir, image_id) for image_id in self.ids]
+        self.img_size = img_size
 
         # Convert str names to class values on masks
         self.class_values = [self.CLASSES.index(_cls.lower()) for _cls in classes]
@@ -115,6 +122,9 @@ class LemonDataset:
             sample = self.preprocessing(image=image, mask=mask)
             image, mask = sample['image'], sample['mask']
         
+        image = cv2.resize(image, self.img_size)
+        mask = cv2.resize(mask, self.img_size)
+
         return image, mask
     
     def __len__(self):
@@ -141,7 +151,6 @@ class LemonDataLoader(keras.utils.Sequence):
         
         # Transpose list of lists
         batch = [np.stack(samples, axis=0) for samples in zip(*data)]
-
         return tuple(batch)
     
     def __len__(self):

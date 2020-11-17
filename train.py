@@ -9,11 +9,11 @@ from utils.paths import Path
 
 # Config parameters
 BACKBONE = 'efficientnetb3'
-BATCH_SIZE = 1
-CLASSES = ['image_quality','illness','gangrene','mould','blemish','dark_style_remains','artifact','condition','pedicel']
+BATCH_SIZE = 4
+CLASSES = ['image_quality','illness']
 LR = 0.0001
-EPOCHS = 2
-IMG_SIZE = (1056,1056)
+EPOCHS = 100
+IMG_SIZE = (256,256)
 
 # Prepare augmentation
 augmentor = Augmentor(img_size=IMG_SIZE)
@@ -22,13 +22,15 @@ augmentor = Augmentor(img_size=IMG_SIZE)
 model = ModelSM(
     backbone=BACKBONE,
     batch_size=BATCH_SIZE,
-    classes=CLASSES
+    classes=CLASSES,
+    decoder_block_type='transpose'
 )
 
 # Create train and val dataloader
 train_dataset = LemonDatasetCOCO(
     images_dir=Path.get_x_train_dir(),
     annot_file=Path.get_y_train_file(),
+    img_size=IMG_SIZE,
     classes=CLASSES,
     augmentation=augmentor.get_training_augmentation(),
     preprocessing=augmentor.get_preprocessing(model.get_preprocess_input_fn())
@@ -36,6 +38,7 @@ train_dataset = LemonDatasetCOCO(
 valid_dataset = LemonDatasetCOCO(
     images_dir=Path.get_x_val_dir(),
     annot_file=Path.get_y_val_file(),
+    img_size=IMG_SIZE,
     classes=CLASSES,
     augmentation=augmentor.get_validation_augmentation(),
     preprocessing=augmentor.get_preprocessing(model.get_preprocess_input_fn())
@@ -57,6 +60,9 @@ model.create_model(
     learning_rate=LR,
     class_weights=None
 )
+
+
+print(model.model.summary())
 
 # Define callbacks for learning rate scheduling and best checkpoints saving
 callbacks = [
