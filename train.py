@@ -14,6 +14,7 @@ CLASSES = ['image_quality','illness']
 LR = 0.0001
 EPOCHS = 100
 IMG_SIZE = (256,256)
+WEIGHTS = None # Path to model weights
 
 # Prepare augmentation
 augmentor = Augmentor(img_size=IMG_SIZE)
@@ -21,8 +22,8 @@ augmentor = Augmentor(img_size=IMG_SIZE)
 # Call model
 model = ModelSM(
     backbone=BACKBONE,
-    batch_size=BATCH_SIZE,
     classes=CLASSES,
+    weights=None,
     decoder_block_type='transpose'
 )
 

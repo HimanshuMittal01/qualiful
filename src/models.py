@@ -6,10 +6,10 @@ import src.segmentation_models as sm
 sm.set_framework('tf.keras')
 
 class ModelSM:
-    def __init__(self, backbone, batch_size, classes, decoder_block_type='transpose'):
+    def __init__(self, backbone, classes, weights=None, decoder_block_type='transpose'):
         self.backbone = backbone
-        self.batch_size = batch_size
         self.classes = classes
+        self.weights=weights
         self.decoder_block_type = decoder_block_type
 
         # define network parameters
@@ -17,7 +17,20 @@ class ModelSM:
         self.activation = 'sigmoid' if self.num_classes == 1 else 'softmax'
 
         # Status of the model
-        self.is_compiled = False
+        if self.weights is None:
+            self.is_compiled = False
+        else:
+            self.is_compiled = True
+            self._create_model()
+            
+    def _create_model(self):
+        self.model = sm.Unet(
+            self.backbone,
+            classes=self.num_classes,
+            activation=self.activation,
+            weights=self.weights,
+            decoder_block_type=self.decoder_block_type
+        )
     
     def get_preprocess_input_fn(self):
         return sm.get_preprocessing(self.backbone)
@@ -27,12 +40,7 @@ class ModelSM:
         TODO: Add parameters to make custom model
         """
         
-        self.model = sm.Unet(
-            self.backbone,
-            classes=self.num_classes,
-            activation=self.activation,
-            decoder_block_type='transpose'
-        )
+        self._create_model()
 
         # define optomizer
         self.optim = keras.optimizers.Adam(learning_rate)
@@ -70,6 +78,10 @@ class ModelSM:
         )
 
         return history
+    
+    def predict(self, x):
+        # Predict
+        return self.model.predict(x)
     
     def get_num_classes(self):
         return self.num_classes
